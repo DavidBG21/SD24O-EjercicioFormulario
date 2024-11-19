@@ -36,6 +36,34 @@ usuarios = [{
     "domicilio": "Av. Simpre Viva"
 }]
 
+#EJERCICIO TAREA
+#Form(...) -> operador ellipsis
+@app.post("/formulario")
+async def formulario(nombre:str=Form(None),direccion:str=Form(...),foto:UploadFile=File(...),vip:bool=Form(False)):
+    print("Nombre: ", nombre)
+    print("Descripción: ", direccion)
+    print("VIP: ", vip)
+    home_usuario = os.path.expanduser("~") #home usuario
+    nombre_archivo = uuid.uuid4() #nombre en formato hexadecimal
+    extension_foto = os.path.splitext(foto.filename)[1]
+    if vip == True:
+        ruta_imagen = f'{home_usuario}/fotos-usuarios-vip/{nombre_archivo}{extension_foto}'
+    else:
+        ruta_imagen = f'{home_usuario}/fotos-usuarios/{nombre_archivo}{extension_foto}'
+    print("Guardando la foto en ", ruta_imagen)
+    with open(ruta_imagen,"wb") as imagen:
+        contenido = await foto.read()
+        imagen.write(contenido)
+    
+    respuesta = {
+        "Nombre" : nombre,
+        "Dirección" : direccion,
+        "Ruta": ruta_imagen,
+        "VIP": vip
+    }
+    return respuesta
+
+# TEORÍA CLASE MARTES
 #Form(...) -> operador ellipsis
 @app.post("/fotos")
 async def guarda_foto(titulo:str=Form(None),descripcion:str=Form(...),foto:UploadFile=File(...)):
